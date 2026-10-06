@@ -1,0 +1,18 @@
+{
+  "scenario_id": "SCENARIO-002",
+  "name": "Long outage - credit eligible",
+  "description": "A long outage that breaches the SLA threshold",
+  "vendor": "VendorA",
+  "incident": {
+    "id": "INC-002",
+    "timestamp": "2026-10-02T14:00:00Z",
+    "duration_minutes": 120,
+    "maintenance_overlap_minutes": 0,
+    "month_minutes": 44640
+  },
+  "expected": {
+    "credit_eligible": true,
+    "credit_tier": "tier1",
+    "reason": "Uptime below 99.9% threshold"
+  }
+}

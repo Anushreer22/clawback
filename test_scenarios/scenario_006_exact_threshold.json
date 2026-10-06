@@ -1,0 +1,18 @@
+{
+  "scenario_id": "SCENARIO-006",
+  "name": "Exact SLA threshold",
+  "description": "Outage exactly at the SLA threshold boundary",
+  "vendor": "VendorA",
+  "incident": {
+    "id": "INC-006",
+    "timestamp": "2026-10-06T12:00:00Z",
+    "duration_minutes": 45,
+    "maintenance_overlap_minutes": 0,
+    "month_minutes": 44640
+  },
+  "expected": {
+    "credit_eligible": true,
+    "credit_tier": "tier1",
+    "reason": "Uptime exactly at or below 99.9% threshold"
+  }
+}

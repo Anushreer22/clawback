@@ -1,0 +1,119 @@
+{
+  "summary": {
+    "total": 6,
+    "correct": 6,
+    "incorrect": 0,
+    "accuracy": 1.0,
+    "false_claims": 0
+  },
+  "results": [
+    {
+      "scenario_id": "SCENARIO-001",
+      "name": "Short outage - no credit",
+      "correct": true,
+      "credit_eligible_match": true,
+      "credit_tier_match": true,
+      "actual": {
+        "credit_eligible": false,
+        "credit_tier": "none",
+        "uptime_percentage": 99.9776
+      },
+      "expected": {
+        "credit_eligible": false,
+        "credit_tier": "none",
+        "reason": "Uptime above 99.9% threshold"
+      },
+      "notice_valid": null
+    },
+    {
+      "scenario_id": "SCENARIO-002",
+      "name": "Long outage - credit eligible",
+      "correct": true,
+      "credit_eligible_match": true,
+      "credit_tier_match": true,
+      "actual": {
+        "credit_eligible": true,
+        "credit_tier": "tier1",
+        "uptime_percentage": 99.7312
+      },
+      "expected": {
+        "credit_eligible": true,
+        "credit_tier": "tier1",
+        "reason": "Uptime below 99.9% threshold"
+      },
+      "notice_valid": null
+    },
+    {
+      "scenario_id": "SCENARIO-003",
+      "name": "Valid maintenance exclusion",
+      "correct": true,
+      "credit_eligible_match": true,
+      "credit_tier_match": true,
+      "actual": {
+        "credit_eligible": false,
+        "credit_tier": "none",
+        "uptime_percentage": 99.9664
+      },
+      "expected": {
+        "credit_eligible": false,
+        "credit_tier": "none",
+        "reason": "Maintenance exclusion valid due to 72+ hour notice"
+      },
+      "notice_valid": true
+    },
+    {
+      "scenario_id": "SCENARIO-004",
+      "name": "Invalid maintenance exclusion",
+      "correct": true,
+      "credit_eligible_match": true,
+      "credit_tier_match": true,
+      "actual": {
+        "credit_eligible": true,
+        "credit_tier": "tier1",
+        "uptime_percentage": 99.7984
+      },
+      "expected": {
+        "credit_eligible": true,
+        "credit_tier": "tier1",
+        "reason": "Maintenance exclusion invalid due to insufficient notice (20 hours)"
+      },
+      "notice_valid": false
+    },
+    {
+      "scenario_id": "SCENARIO-005",
+      "name": "Missing maintenance notice",
+      "correct": true,
+      "credit_eligible_match": true,
+      "credit_tier_match": true,
+      "actual": {
+        "credit_eligible": true,
+        "credit_tier": "tier1",
+        "uptime_percentage": 99.7312
+      },
+      "expected": {
+        "credit_eligible": true,
+        "credit_tier": "tier1",
+        "reason": "No maintenance notice posted - exclusion invalid"
+      },
+      "notice_valid": false
+    },
+    {
+      "scenario_id": "SCENARIO-006",
+      "name": "Exact SLA threshold",
+      "correct": true,
+      "credit_eligible_match": true,
+      "credit_tier_match": true,
+      "actual": {
+        "credit_eligible": true,
+        "credit_tier": "tier1",
+        "uptime_percentage": 99.8992
+      },
+      "expected": {
+        "credit_eligible": true,
+        "credit_tier": "tier1",
+        "reason": "Uptime exactly at or below 99.9% threshold"
+      },
+      "notice_valid": null
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "scenario_id": "SCENARIO-004",
+  "name": "Invalid maintenance exclusion",
+  "description": "Outage with invalid maintenance exclusion (insufficient notice)",
+  "vendor": "VendorA",
+  "incident": {
+    "id": "INC-004",
+    "timestamp": "2026-10-04T08:00:00Z",
+    "duration_minutes": 90,
+    "maintenance_overlap_minutes": 60,
+    "maintenance_window_start": "2026-10-04T08:00:00Z",
+    "maintenance_notice_posted": "2026-10-03T12:00:00Z",
+    "month_minutes": 44640
+  },
+  "expected": {
+    "credit_eligible": true,
+    "credit_tier": "tier1",
+    "reason": "Maintenance exclusion invalid due to insufficient notice (20 hours)"
+  }
+}

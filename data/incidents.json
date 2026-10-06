@@ -1,0 +1,17 @@
+{
+  "vendor": "VendorA",
+  "incidents": [
+    {
+      "id": "INC-2026-001",
+      "timestamp": "2026-10-05T14:30:00Z",
+      "duration_minutes": 78,
+      "description": "Service outage affecting all regions",
+      "maintenance_overlap_minutes": 35,
+      "maintenance_window_start": "2026-10-05T14:45:00Z",
+      "maintenance_window_end": "2026-10-05T15:20:00Z",
+      "maintenance_notice_posted": "2026-10-04T18:30:00Z",
+      "month": "2026-10",
+      "month_minutes": 44640
+    }
+  ]
+}

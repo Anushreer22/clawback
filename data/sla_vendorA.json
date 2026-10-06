@@ -1,0 +1,15 @@
+{
+  "vendor": "VendorA",
+  "sla_uptime_target": 99.9,
+  "credit_percentage": 10,
+  "claim_window_days": 30,
+  "maintenance_exclusion": {
+    "requires_notice_hours": 72,
+    "description": "Scheduled maintenance windows are excluded from uptime calculations only if notice is provided at least 72 hours in advance."
+  },
+  "clauses": {
+    "uptime": "Vendor guarantees 99.9% monthly uptime. If uptime falls below this threshold, customer is entitled to a 10% credit on their monthly bill.",
+    "maintenance_exclusion": "Scheduled maintenance windows are excluded from uptime calculations only if notice is provided at least 72 hours in advance of the maintenance window.",
+    "claim_window": "Customers must file claims within 30 days of the incident occurrence."
+  }
+}

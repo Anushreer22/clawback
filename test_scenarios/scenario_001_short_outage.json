@@ -1,0 +1,18 @@
+{
+  "scenario_id": "SCENARIO-001",
+  "name": "Short outage - no credit",
+  "description": "A short outage that doesn't breach the SLA threshold",
+  "vendor": "VendorA",
+  "incident": {
+    "id": "INC-001",
+    "timestamp": "2026-10-01T10:00:00Z",
+    "duration_minutes": 10,
+    "maintenance_overlap_minutes": 0,
+    "month_minutes": 44640
+  },
+  "expected": {
+    "credit_eligible": false,
+    "credit_tier": "none",
+    "reason": "Uptime above 99.9% threshold"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "scenario_id": "SCENARIO-003",
+  "name": "Valid maintenance exclusion",
+  "description": "Outage with valid maintenance exclusion (proper notice)",
+  "vendor": "VendorA",
+  "incident": {
+    "id": "INC-003",
+    "timestamp": "2026-10-03T02:00:00Z",
+    "duration_minutes": 60,
+    "maintenance_overlap_minutes": 45,
+    "maintenance_window_start": "2026-10-03T02:00:00Z",
+    "maintenance_notice_posted": "2026-09-30T02:00:00Z",
+    "month_minutes": 44640
+  },
+  "expected": {
+    "credit_eligible": false,
+    "credit_tier": "none",
+    "reason": "Maintenance exclusion valid due to 72+ hour notice"
+  }
+}
