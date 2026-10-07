@@ -130,6 +130,7 @@ def create_claim(claim_id: str, vendor: str, incident_id: str = None, amount: fl
         conn.close()
         return claim_db_id
     except sqlite3.IntegrityError:
+        conn.rollback()
         conn.close()
         # Claim already exists, update it
         return update_claim(claim_id, status="pending", amount=amount)

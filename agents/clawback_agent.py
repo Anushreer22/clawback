@@ -10,10 +10,15 @@ from dotenv import load_dotenv
 
 # Import deterministic tools
 import sys
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from tools import calculate_uptime, get_clause, get_status_history, check_notice_period, file_claim
 import db
+
+# Import communication module for agent-to-agent messaging
+from agents.communication import get_communicator
 
 # Load environment variables
 load_dotenv()
@@ -169,7 +174,7 @@ TOOLS = [
                     },
                     "claim_id": {
                         "type": "string",
-                        "description": "Optional claim ID for tracking",
+                        "description": "Optional claim ID for tracking. When filing a rebuttal, reuse the same claim ID to maintain conversation history.",
                         "default": None
                     }
                 },
@@ -188,6 +193,9 @@ TOOL_REGISTRY = {
     "file_claim": file_claim
 }
 
+# Get communicator for agent-to-agent messaging
+communicator = get_communicator()
+
 
 def log_event(tool_call, result: Any, claim_id: str = None, step_number: int = None) -> None:
     """
@@ -204,6 +212,47 @@ def log_event(tool_call, result: Any, claim_id: str = None, step_number: int = N
             input_data={
                 "tool": tool_call.function.name,
                 "arguments": json.loads(tool_call.function.arguments)
+            },
+            output_data=result,
+            step_number=step_number
+        )
+
+
+def log_agent_message(
+    claim_id: str,
+    message_type: str,
+    sender: str,
+    receiver: str,
+    payload: Dict[str, Any],
+    result: Dict[str, Any],
+    step_number: int = None
+) -> None:
+    """
+    Log agent-to-agent communication to console and database.
+
+    Args:
+        claim_id: Claim ID
+        message_type: Type of message (SENT or RECEIVED)
+        sender: Sender agent name
+        receiver: Receiver agent name
+        payload: Message payload
+        result: Result/response
+        step_number: Step number
+    """
+    event_type = f"AGENT_MESSAGE_{message_type}"
+    print(f"[{event_type}] {sender} -> {receiver}")
+    print(f"[PAYLOAD] {json.dumps(payload, indent=2, default=str)}")
+    print(f"[RESULT] {json.dumps(result, indent=2, default=str)}")
+
+    # Log to database
+    if claim_id:
+        db.log_event(
+            claim_id=claim_id,
+            event_type=event_type,
+            input_data={
+                "sender": sender,
+                "receiver": receiver,
+                "payload": payload
             },
             output_data=result,
             step_number=step_number
@@ -312,12 +361,47 @@ def run_agent(goal: str, max_steps: int = 10, claim_id: str = None) -> str:
             try:
                 # Parse arguments
                 args = json.loads(call.function.arguments)
+                if call.function.name == "file_claim" and not args.get("claim_id"):
+                    args["claim_id"] = claim_id
 
                 # Execute the tool
                 result = TOOL_REGISTRY[call.function.name](**args)
 
                 # Log the event
                 log_event(call, result, claim_id=claim_id, step_number=step)
+
+                # Special handling for file_claim - log agent communication
+                if call.function.name == "file_claim":
+                    vendor = args.get("vendor", "Unknown")
+                    mode = result.get("mode", "simulation")
+                    log_agent_message(
+                        claim_id=claim_id,
+                        message_type="SENT",
+                        sender="clawback_agent",
+                        receiver=f"vendor_agent ({vendor})",
+                        payload={"message": args.get("claim_message")},
+                        result=result,
+                        step_number=step
+                    )
+
+                    # If this is a real vendor response (not just "submitted"),
+                    # add it to the conversation as a user message so ASI:One can reason about it
+                    if result.get("status") in ["approved", "rejected", "error"]:
+                        vendor_response_msg = f"""
+Vendor Response ({mode} mode):
+Status: {result['status']}
+Reason: {result['reason']}
+Requires Rebuttal: {result.get('requires_rebuttal', False)}
+
+Please analyze this response and determine the next action.
+If rejected and requires rebuttal, use the available tools to gather evidence and file a rebuttal.
+If approved, report the final outcome.
+"""
+                        messages.append({
+                            "role": "user",
+                            "content": vendor_response_msg
+                        })
+                        print(f"[VENDOR_RESPONSE] Added to conversation for ASI:One reasoning")
 
                 # Add result to conversation
                 messages.append({

@@ -24,9 +24,15 @@
 - System prompt enforces rules: read clauses first, never do math, check notice periods
 - Safety limit: max 10 steps per claim
 
-### Phase 5: Agent Communication ⏸️
-- Placeholder `file_claim()` tool created
-- Full uagents Chat Protocol integration pending (requires both agents running)
+### Phase 5: Agent Communication ✅
+- Implemented real uAgents Chat Protocol communication
+- Dual mode: simulation (default) and live
+- Simulation mode: deterministic vendor responses (no network required)
+- Live mode: actual agent-to-agent message passing
+- Automatic fallback to simulation if live mode fails
+- Database logging for AGENT_MESSAGE_SENT and AGENT_MESSAGE_RECEIVED events
+- Vendor responses integrated into ASI:One conversation loop
+- Communication tests verify full flow: claim → rejection → reasoning → rebuttal → approval
 
 ### Phase 6: SQLite Logging ✅
 - Database schema with events, claims, and approvals tables

@@ -2,6 +2,78 @@
 
 An automated agent system for recovering SLA credits from vendors when service level agreements are violated.
 
+## Python Environment
+
+**Supported Python Version:** Python 3.10 - 3.13
+
+**Important:** Python 3.14 is NOT supported by the uagents framework and will cause initialization errors.
+
+### Creating the Virtual Environment
+
+**Windows (using Python launcher):**
+```bash
+# Create virtual environment with Python 3.11
+py -3.11 -m venv .venv
+
+# Activate in Git Bash
+source .venv/Scripts/activate
+
+# Activate in PowerShell
+.venv\Scripts\Activate.ps1
+
+# Activate in Command Prompt
+.venv\Scripts\activate.bat
+```
+
+**Linux/Mac:**
+```bash
+# Create virtual environment
+python3.11 -m venv .venv
+
+# Activate
+source .venv/bin/activate
+```
+
+### Installing Dependencies
+
+```bash
+# Upgrade pip
+python -m pip install --upgrade pip
+
+# Install requirements
+pip install -r requirements.txt
+```
+
+### Verifying Installation
+
+```bash
+# Check Python version
+python --version
+# Should show: Python 3.11.x (or 3.10-3.13)
+
+# Check uagents installation
+python -m pip show uagents
+# Should show: Version: 0.26.0
+
+# Test vendor agent startup
+python agents/vendor_agent.py
+# Should start successfully without event loop errors
+```
+
+### Running the Vendor Agent
+
+```bash
+# Activate virtual environment first
+source .venv/Scripts/activate  # Git Bash
+# or
+.venv\Scripts\Activate.ps1   # PowerShell
+
+# Run vendor agent
+python agents/vendor_agent.py
+```
+
+The vendor agent will start on port 8001 and display its address.
+
 ## Quick Start Demo
 
 The fastest way to see it in action:
@@ -161,7 +233,7 @@ clawback/
 - [x] Phase 2: Deterministic tools with unit tests
 - [x] Phase 3: Vendor agent with uagents
 - [x] Phase 4: Clawback agent loop with ASI:One
-- [ ] Phase 5: Agent-to-agent communication (Chat Protocol) - placeholder implemented
+- [x] Phase 5: Agent-to-agent communication (Chat Protocol) - fully implemented with simulation/live modes
 - [x] Phase 6: SQLite logging
 - [x] Phase 7: Approval gate logic
 - [x] Phase 8: FastAPI + React dashboard
@@ -173,6 +245,7 @@ clawback/
 
 - **DEMO_GUIDE.md**: Detailed instructions for running demos and the 4-minute demo script
 - **PROJECT_SUMMARY.md**: Complete project summary with all phases and next steps
+- **PHASE5_GUIDE.md**: Detailed guide for Phase 5 agent-to-agent communication with live/simulation modes
 
 ## Next Steps (Optional)
 

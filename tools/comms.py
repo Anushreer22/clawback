@@ -1,13 +1,28 @@
 """
 Communication tool for filing claims with vendor agents.
-This will be used to send messages over the Chat Protocol.
+Supports both simulation mode and live uAgents Chat Protocol.
 """
-from typing import Dict, Any
+from typing import Dict, Any, Optional
+import os
+import asyncio
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from agents.communication import get_communicator
+
+try:
+    from uagents import Agent, Context
+    from agents.vendor_agent import ClaimMessage, ClaimResponse, get_vendor_agent
+    UAGENTS_AVAILABLE = True
+except ImportError:
+    UAGENTS_AVAILABLE = False
 
 
-def file_claim(vendor: str, claim_message: str, claim_id: str = None) -> Dict[str, Any]:
+def file_claim_simulation(vendor: str, claim_message: str, claim_id: str = None) -> Dict[str, Any]:
     """
-    File a claim with a vendor agent over the Chat Protocol.
+    Simulation mode - returns deterministic vendor responses.
 
     Args:
         vendor: Vendor name (e.g., "VendorA")
@@ -15,21 +30,42 @@ def file_claim(vendor: str, claim_message: str, claim_id: str = None) -> Dict[st
         claim_id: Optional claim ID for tracking
 
     Returns:
-        Dict with:
-            - vendor: Vendor name
-            - claim_id: Claim ID
-            - status: Status of the claim submission
-            - message: Response from vendor
+        Dict with vendor response
     """
-    # This is a placeholder - will be implemented with uagents in Phase 5
-    # For now, return a mock response
-    if claim_id is None:
-        claim_id = f"CLAIM-{vendor}-{int(__import__('time').time())}"
+    communicator = get_communicator()
+    return communicator._simulate_claim(vendor, claim_message, claim_id)
 
-    return {
-        "vendor": vendor,
-        "claim_id": claim_id,
-        "status": "submitted",
-        "message": "Claim submitted to vendor agent (placeholder - implement with uagents)",
-        "claim_message": claim_message
-    }
+
+async def file_claim_live(vendor: str, claim_message: str, claim_id: str = None) -> Dict[str, Any]:
+    """
+    Live mode - sends message to vendor agent via uAgents Chat Protocol.
+
+    Args:
+        vendor: Vendor name (e.g., "VendorA")
+        claim_message: The claim message to send
+        claim_id: Optional claim ID for tracking
+
+    Returns:
+        Dict with vendor response
+    """
+    communicator = get_communicator()
+    return await communicator.send_claim_async(vendor, claim_message, claim_id)
+
+
+def file_claim(vendor: str, claim_message: str, claim_id: str = None) -> Dict[str, Any]:
+    """
+    File a claim with a vendor agent.
+
+    Automatically selects simulation or live mode based on DEMO_MODE environment variable.
+
+    Args:
+        vendor: Vendor name (e.g., "VendorA")
+        claim_message: The claim message to send
+        claim_id: Optional claim ID for tracking
+
+    Returns:
+        Dict with vendor response
+    """
+    communicator = get_communicator()
+    return communicator.send_claim(vendor, claim_message, claim_id)
+
