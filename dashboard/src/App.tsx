@@ -128,14 +128,16 @@ function App() {
   // Poll for real backend data approximately every 1 second
   useEffect(() => {
     let isMounted = true
+    let activeController: AbortController | null = null
 
     const fetchData = async () => {
+      activeController = new AbortController()
       try {
         const claimParam = selectedClaim ? `?claim_id=${encodeURIComponent(selectedClaim)}&limit=100` : '?limit=100'
         const [eventsRes, claimsRes, approvalsRes] = await Promise.all([
-          fetch(`${API_BASE}/api/events${claimParam}`),
-          fetch(`${API_BASE}/api/claims`),
-          fetch(`${API_BASE}/api/approvals?status=pending`),
+          fetch(`${API_BASE}/api/events${claimParam}`, { signal: activeController.signal }),
+          fetch(`${API_BASE}/api/claims`, { signal: activeController.signal }),
+          fetch(`${API_BASE}/api/approvals?status=pending`, { signal: activeController.signal }),
         ])
 
         if (!eventsRes.ok || !claimsRes.ok || !approvalsRes.ok) {
@@ -154,6 +156,7 @@ function App() {
           setErrorMsg(null)
         }
       } catch (err: any) {
+        if (err.name === 'AbortError') return
         if (isMounted) {
           setErrorMsg(`Connecting to backend at ${API_BASE}...`)
         }
@@ -168,6 +171,9 @@ function App() {
 
     return () => {
       isMounted = false
+      if (activeController) {
+        activeController.abort()
+      }
       if (interval) clearInterval(interval)
     }
   }, [selectedClaim, isPolling])

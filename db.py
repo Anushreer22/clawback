@@ -9,7 +9,9 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 
 
-DB_PATH = Path(__file__).parent / "clawback.db"
+import os
+
+DB_PATH = Path(os.getenv("DATABASE_PATH", str(Path(__file__).parent / "clawback.db")))
 
 
 def init_db():

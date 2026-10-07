@@ -54,7 +54,10 @@ class VendorCommunicator:
             return target_addr, RulesBasedResolver(rules={target_addr: [endpoint]})
         else:
             target_addr = vendor_address
-            return target_addr, RulesBasedResolver(rules={target_addr: ["http://127.0.0.1:8001/submit"]})
+            vendor_endpoint = os.getenv("VENDOR_ENDPOINT", "http://127.0.0.1:8001/submit")
+            if not vendor_endpoint.endswith("/submit"):
+                vendor_endpoint = f"{vendor_endpoint.rstrip('/')}/submit"
+            return target_addr, RulesBasedResolver(rules={target_addr: [vendor_endpoint]})
 
     def initialize_agent(self):
         """Initialize the clawback agent for uAgents communication."""

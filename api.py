@@ -21,6 +21,11 @@ app.add_middleware(
 )
 
 
+@app.on_event("startup")
+def startup_event():
+    db.init_db()
+
+
 # Request/Response models
 class ApprovalAction(BaseModel):
     approval_id: int
@@ -108,3 +113,11 @@ def create_claim(claim_id: str, vendor: str, incident_id: Optional[str] = None, 
         return {"success": True, "id": claim_db_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+if __name__ == "__main__":
+    import uvicorn
+    import os
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("api:app", host=host, port=port, reload=False)
